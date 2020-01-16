@@ -1,0 +1,19 @@
+void Dot(void);
+void Dash(void);
+void PlayA(void);
+void PlayB(void);
+void PlayC(void);
+void PlayE(void);
+void PlayF(void);
+void PlayH(void);
+void PlayI(void);
+void PlayK(void);
+void PlayL(void);
+void PlayM(void);
+void PlayO(void);
+void PlayR(void);
+void PlayS(void);
+void PlayT(void);
+void PlayV(void);
+void PlayX(void);
+

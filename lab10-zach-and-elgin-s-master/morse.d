@@ -1,0 +1,12 @@
+.\morse.o: Morse.c
+.\morse.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\morse.o: tm4c123gh6pm.h
+.\morse.o: ST7735.h
+.\morse.o: Random.h
+.\morse.o: TExaS.h
+.\morse.o: ADC.h
+.\morse.o: DAC.h
+.\morse.o: Sound.h
+.\morse.o: Timer1.h
+.\morse.o: Images.h
+.\morse.o: C:\Keil\ARM\ARMCC\bin\..\include\time.h

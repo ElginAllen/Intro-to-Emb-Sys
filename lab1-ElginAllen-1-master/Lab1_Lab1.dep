@@ -1,0 +1,9 @@
+Dependencies for Project 'Lab1', Target 'Lab1': (DO NOT MODIFY !)
+F (.\Startup.s)(0x589A1C7E)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary--list .\startup.lst --xref -o .\startup.o --depend .\startup.d)
+F (.\main.c)(0x589A1C7E)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork --signed_chars --C99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-o .\main.o --omf_browse .\main.crf --depend .\main.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
+I (UART.h)(0x589A1C7E)
+F (.\Lab1.c)(0x589A431B)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork --signed_chars --C99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-o .\lab1.o --omf_browse .\lab1.crf --depend .\lab1.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
+F (.\UART.c)(0x589A1C7E)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork --signed_chars --C99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-o .\uart.o --omf_browse .\uart.crf --depend .\uart.d)
+I (UART.h)(0x589A1C7E)

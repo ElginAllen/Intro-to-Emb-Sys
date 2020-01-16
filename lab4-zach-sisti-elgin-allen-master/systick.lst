@@ -1,0 +1,121 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ; SysTick.s
+    2 00000000         ; Module written by: Zach Sisti and Elgin Allen
+    3 00000000         ; Date Created: 2/14/2017
+    4 00000000         ; Last Modified: 2/27/2017 
+    5 00000000         ; Brief Description: Initializes SysTick
+    6 00000000         
+    7 00000000 E000E010 
+                       NVIC_ST_CTRL_R
+                               EQU              0xE000E010
+    8 00000000 E000E014 
+                       NVIC_ST_RELOAD_R
+                               EQU              0xE000E014
+    9 00000000 E000E018 
+                       NVIC_ST_CURRENT_R
+                               EQU              0xE000E018
+   10 00000000         
+   11 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+   12 00000000                 THUMB
+   13 00000000         ; ;-UUU-Export routine(s) from SysTick.s to callers
+   14 00000000                 EXPORT           SysTick_Init
+   15 00000000         ;------------SysTick_Init------------
+   16 00000000         ; ;-UUU-Complete this subroutine
+   17 00000000         ; Initialize SysTick with busy wait running at bus clock
+                       .
+   18 00000000         ; Input: none
+   19 00000000         ; Output: none
+   20 00000000         ; Modifies: ??
+   21 00000000         SysTick_Init
+   22 00000000 4807            LDR              R0, =NVIC_ST_CTRL_R
+   23 00000002 F04F 0100       MOV              R1, #0
+   24 00000006 6001            STR              R1, [R0]
+   25 00000008         ;SPECIFY LOAD VALUE
+   26 00000008 4806            LDR              R0, =NVIC_ST_RELOAD_R
+   27 0000000A 4907            LDR              R1, =0x00FFFFFF
+   28 0000000C 6001            STR              R1, [R0]
+   29 0000000E         
+   30 0000000E 4807            LDR              R0, =NVIC_ST_CURRENT_R
+   31 00000010 F04F 0100       MOV              R1, #0
+   32 00000014 6001            STR              R1, [R0]
+   33 00000016         
+   34 00000016 4802            LDR              R0, =NVIC_ST_CTRL_R
+   35 00000018 F04F 0105       MOV              R1, #0x05
+   36 0000001C 6001            STR              R1, [R0]
+   37 0000001E         
+   38 0000001E 4770            BX               LR          ; return
+   39 00000020         
+   40 00000020         
+   41 00000020                 ALIGN                        ; make sure the end
+                                                             of this section is
+                                                             aligned
+   42 00000020                 END                          ; end of file
+              E000E010 
+              E000E014 
+              00FFFFFF 
+              E000E018 
+Command Line: --debug --xref --cpu=Cortex-M4 --apcs=interwork --depend=.\systic
+k.d -o.\systick.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\Include -IC:\Keil\
+ARM\Inc\Luminary --predefine="__EVAL SETA 1" --list=.\systick.lst SysTick.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 11 in file SysTick.s
+   Uses
+      None
+Comment: .text unused
+SysTick_Init 00000000
+
+Symbol: SysTick_Init
+   Definitions
+      At line 21 in file SysTick.s
+   Uses
+      At line 14 in file SysTick.s
+Comment: SysTick_Init used once
+2 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+NVIC_ST_CTRL_R E000E010
+
+Symbol: NVIC_ST_CTRL_R
+   Definitions
+      At line 7 in file SysTick.s
+   Uses
+      At line 22 in file SysTick.s
+      At line 34 in file SysTick.s
+
+NVIC_ST_CURRENT_R E000E018
+
+Symbol: NVIC_ST_CURRENT_R
+   Definitions
+      At line 9 in file SysTick.s
+   Uses
+      At line 30 in file SysTick.s
+Comment: NVIC_ST_CURRENT_R used once
+NVIC_ST_RELOAD_R E000E014
+
+Symbol: NVIC_ST_RELOAD_R
+   Definitions
+      At line 8 in file SysTick.s
+   Uses
+      At line 26 in file SysTick.s
+Comment: NVIC_ST_RELOAD_R used once
+3 symbols
+338 symbols in table

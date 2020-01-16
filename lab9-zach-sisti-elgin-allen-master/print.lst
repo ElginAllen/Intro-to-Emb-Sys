@@ -1,0 +1,755 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ; Print.s
+    2 00000000         ; Student names: change this to your names or look very 
+                       silly
+    3 00000000         ; Last modification date: change this to the last modifi
+                       cation date or look very silly
+    4 00000000         ; Runs on LM4F120 or TM4C123
+    5 00000000         ; EE319K lab 7 device driver for any LCD
+    6 00000000         ;
+    7 00000000         ; As part of Lab 7, students need to implement these LCD
+                       _OutDec and LCD_OutFix
+    8 00000000         ; This driver assumes two low-level LCD functions
+    9 00000000         ; ST7735_OutChar   outputs a single 8-bit ASCII characte
+                       r
+   10 00000000         ; ST7735_OutString outputs a null-terminated string 
+   11 00000000         
+   12 00000000                 IMPORT           ST7735_OutChar
+   13 00000000                 IMPORT           ST7735_OutString
+   14 00000000                 EXPORT           LCD_OutDec
+   15 00000000                 EXPORT           LCD_OutFix
+   16 00000000         
+   17 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+   18 00000000                 THUMB
+   19 00000000         
+   20 00000000 00000000 
+                       ASCII   EQU              0
+   21 00000000 00000004 
+                       ASCII1  EQU              4
+   22 00000000 00000008 
+                       ASCII2  EQU              8
+   23 00000000 0000000C 
+                       ASCII3  EQU              12
+   24 00000000 00000010 
+                       ASCII4  EQU              16
+   25 00000000 00000014 
+                       ASCII5  EQU              20
+   26 00000000         
+   27 00000000         
+   28 00000000         ;-----------------------LCD_OutDec----------------------
+                       -
+   29 00000000         ; Output a 32-bit number in unsigned decimal format
+   30 00000000         ; Input: R0 (call by value) 32-bit unsigned number
+   31 00000000         ; Output: none
+   32 00000000         ; Invariables: This function must not permanently modify
+                        registers R4 to R11
+   33 00000000         LCD_OutDec
+   34 00000000 E92D 5FFF       PUSH             {R1,R2,R3,R4,R5,R6,R7,R8,R9,R10
+,R11,R12,LR,R0}
+   35 00000004 B086            SUB              SP, SP, #24
+   36 00000006 F242 7110       MOV              R1, #10000
+   37 0000000A FB01 F101       MUL              R1, R1, R1
+   38 0000000E F04F 020A       MOV              R2, #10
+   39 00000012 FB01 F102       MUL              R1, R1, R2
+   40 00000016 4288            CMP              R0, R1
+   41 00000018 DA2E            BGE              BIL
+   42 0000001A 2800            CMP              R0, #0
+   43 0000001C DB2C            BLT              BIL
+   44 0000001E F242 7110       MOV              R1, #10000
+   45 00000022 FB01 F101       MUL              R1, R1, R1
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   46 00000026 4288            CMP              R0, R1
+   47 00000028 DA29            BGE              HUNMIL
+   48 0000002A F242 7110       MOV              R1, #10000
+   49 0000002E F44F 727A       MOV              R2, #1000
+   50 00000032 FB01 F102       MUL              R1, R1, R2
+   51 00000036 4288            CMP              R0, R1
+   52 00000038 DA24            BGE              TENMIL
+   53 0000003A F242 7110       MOV              R1, #10000
+   54 0000003E F04F 0264       MOV              R2, #100
+   55 00000042 FB01 F102       MUL              R1, R1, R2
+   56 00000046 4288            CMP              R0, R1
+   57 00000048 DA1F            BGE              MIL
+   58 0000004A F242 7110       MOV              R1, #10000
+   59 0000004E F04F 020A       MOV              R2, #10
+   60 00000052 FB01 F102       MUL              R1, R1, R2
+   61 00000056 4288            CMP              R0, R1
+   62 00000058 DA1A            BGE              HUNTHOU
+   63 0000005A F242 7110       MOV              R1, #10000
+   64 0000005E 4288            CMP              R0, R1
+   65 00000060 DA19            BGE              TENTHOU
+   66 00000062 F5B0 7F7A       CMP              R0, #1000
+   67 00000066 DA19            BGE              THOU
+   68 00000068 2864            CMP              R0, #100
+   69 0000006A DA1A            BGE              HUN
+   70 0000006C 280A            CMP              R0, #10
+   71 0000006E DA1B            BGE              TEN
+   72 00000070 F04F 0201       MOV              R2, #1
+   73 00000074 4601            MOV              R1, R0
+   74 00000076 E029            B                ONES
+   75 00000078         BIL
+   76 00000078 F04F 020A       MOV              R2, #10
+   77 0000007C E016            B                LOOP
+   78 0000007E         HUNMIL
+   79 0000007E F04F 0209       MOV              R2, #9
+   80 00000082 E013            B                LOOP
+   81 00000084         TENMIL
+   82 00000084 F04F 0208       MOV              R2, #8
+   83 00000088 E010            B                LOOP
+   84 0000008A         MIL
+   85 0000008A F04F 0207       MOV              R2, #7
+   86 0000008E E00D            B                LOOP
+   87 00000090         HUNTHOU
+   88 00000090 F04F 0206       MOV              R2, #6
+   89 00000094 E00A            B                LOOP
+   90 00000096         TENTHOU
+   91 00000096 F04F 0205       MOV              R2, #5
+   92 0000009A E007            B                LOOP
+   93 0000009C         THOU
+   94 0000009C F04F 0204       MOV              R2, #4
+   95 000000A0 E004            B                LOOP
+   96 000000A2         HUN
+   97 000000A2 F04F 0203       MOV              R2, #3
+   98 000000A6 E001            B                LOOP
+   99 000000A8         TEN
+  100 000000A8 F04F 0202       MOV              R2, #2
+  101 000000AC         LOOP
+  102 000000AC 4601            MOV              R1, R0
+  103 000000AE 2A01            CMP              R2, #1
+  104 000000B0 D00C            BEQ              ONES
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+  105 000000B2 F04F 0301       MOV              R3, #1
+  106 000000B6 4614            MOV              R4, R2
+  107 000000B8         WHILE
+  108 000000B8 F04F 060A       MOV              R6, #10
+  109 000000BC FB03 F306       MUL              R3, R3, R6
+  110 000000C0 F1A4 0401       SUB              R4, R4, #1
+  111 000000C4 2C01            CMP              R4, #1
+  112 000000C6 DCF7            BGT              WHILE
+  113 000000C8 FBB1 F1F3       UDIV             R1, R1, R3
+  114 000000CC         ONES
+  115 000000CC F101 0130       ADD              R1, #0x30
+  116 000000D0 9100            STR              R1, [SP, #ASCII]
+  117 000000D2 F000 F80F       BL               OUTPUT
+  118 000000D6 F1A1 0130       SUB              R1, #0x30
+  119 000000DA FB01 F103       MUL              R1, R1, R3
+  120 000000DE EBA0 0001       SUB              R0, R0, R1
+  121 000000E2 F1A2 0201       SUB              R2, R2, #1
+  122 000000E6 2A01            CMP              R2, #1
+  123 000000E8 DB00            BLT              DONE
+  124 000000EA E7DF            B                LOOP
+  125 000000EC         DONE
+  126 000000EC B006            ADD              SP, SP, #24
+  127 000000EE E8BD 5FFF       POP              {R1,R2,R3,R4,R5,R6,R7,R8,R9,R10
+,R11,R12,LR,R0}
+  128 000000F2 4770            BX               LR
+  129 000000F4         OUTPUT
+  130 000000F4 4607            MOV              R7, R0
+  131 000000F6 46F0            MOV              R8, LR
+  132 000000F8 4689            MOV              R9, R1
+  133 000000FA 4692            MOV              R10, R2
+  134 000000FC 469B            MOV              R11, R3
+  135 000000FE 46A4            MOV              R12, R4
+  136 00000100 9800            LDR              R0, [SP, #ASCII]
+  137 00000102 F7FF FFFE       BL               ST7735_OutChar
+  138 00000106 4638            MOV              R0, R7
+  139 00000108 46C6            MOV              LR, R8
+  140 0000010A 4649            MOV              R1, R9
+  141 0000010C 4652            MOV              R2, R10
+  142 0000010E 465B            MOV              R3, R11
+  143 00000110 4664            MOV              R4, R12
+  144 00000112 4770            BX               LR
+  145 00000114         ;* * * * * * * * End of LCD_OutDec * * * * * * * *
+  146 00000114         
+  147 00000114         ; -----------------------LCD _OutFix--------------------
+                       --
+  148 00000114         ; Output characters to LCD display in fixed-point format
+                       
+  149 00000114         ; unsigned decimal, resolution 0.001, range 0.000 to 9.9
+                       99
+  150 00000114         ; Inputs:  R0 is an unsigned 32-bit number
+  151 00000114         ; Outputs: none
+  152 00000114         ; E.g., R0=0,    then output "0.000 "
+  153 00000114         ;       R0=3,    then output "0.003 "
+  154 00000114         ;       R0=89,   then output "0.089 "
+  155 00000114         ;       R0=123,  then output "0.123 "
+  156 00000114         ;       R0=9999, then output "9.999 "
+  157 00000114         ;       R0>9999, then output "*.*** "
+  158 00000114         ; Invariables: This function must not permanently modify
+                        registers R4 to R11
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+  159 00000114         LCD_OutFix
+  160 00000114 E92D 43FE       PUSH             {R1,R2,R3,R4,R5,R6,R7,R8,R9,LR}
+  161 00000118 B086            SUB              SP, SP, #24
+  162 0000011A F04F 0500       MOV              R5 ,#0
+  163 0000011E F04F 0130       MOV              R1, #0x30
+  164 00000122 9101            STR              R1, [SP, #ASCII1]
+  165 00000124 9103            STR              R1, [SP, #ASCII3]
+  166 00000126 9104            STR              R1, [SP, #ASCII4]
+  167 00000128 9105            STR              R1, [SP, #ASCII5]
+  168 0000012A F04F 012E       MOV              R1, #0x2E
+  169 0000012E 9102            STR              R1, [SP, #ASCII2]
+  170 00000130 F242 7110       MOV              R1, #10000
+  171 00000134 4288            CMP              R0, R1
+  172 00000136 DA0C            BGE              TENTHOU1
+  173 00000138 2800            CMP              R0, #0
+  174 0000013A DB0A            BLT              TENTHOU1
+  175 0000013C F5B0 7F7A       CMP              R0, #1000
+  176 00000140 DA1C            BGE              THOU1
+  177 00000142 2864            CMP              R0, #100
+  178 00000144 DA1D            BGE              HUN1
+  179 00000146 280A            CMP              R0, #10
+  180 00000148 DA1E            BGE              TEN1
+  181 0000014A F04F 0200       MOV              R2, #0
+  182 0000014E 4601            MOV              R1, R0
+  183 00000150 E02C            B                ONES1
+  184 00000152         TENTHOU1
+  185 00000152 F04F 002A       MOV              R0, #0x2A
+  186 00000156 F7FF FFFE       BL               ST7735_OutChar
+  187 0000015A F04F 002E       MOV              R0, #0x2E
+  188 0000015E F7FF FFFE       BL               ST7735_OutChar
+  189 00000162 F04F 002A       MOV              R0, #0x2A
+  190 00000166 F7FF FFFE       BL               ST7735_OutChar
+  191 0000016A F04F 002A       MOV              R0, #0x2A
+  192 0000016E F7FF FFFE       BL               ST7735_OutChar
+  193 00000172 F04F 002A       MOV              R0, #0x2A
+  194 00000176 F7FF FFFE       BL               ST7735_OutChar
+  195 0000017A E037            B                FINALOVERTENTHOUSAND
+  196 0000017C         THOU1
+  197 0000017C F04F 0203       MOV              R2, #3
+  198 00000180 E004            B                LOOP1
+  199 00000182         HUN1
+  200 00000182 F04F 0202       MOV              R2, #2
+  201 00000186 E001            B                LOOP1
+  202 00000188         TEN1
+  203 00000188 F04F 0201       MOV              R2, #1
+  204 0000018C         LOOP1
+  205 0000018C 4601            MOV              R1, R0
+  206 0000018E 2A00            CMP              R2, #0
+  207 00000190 D00C            BEQ              ONES1
+  208 00000192 F04F 0301       MOV              R3, #1
+  209 00000196 4614            MOV              R4, R2
+  210 00000198         WHILE1
+  211 00000198 F04F 060A       MOV              R6, #10
+  212 0000019C FB03 F306       MUL              R3, R3, R6
+  213 000001A0 F1A4 0401       SUB              R4, R4, #1
+  214 000001A4 2C00            CMP              R4, #0
+  215 000001A6 DCF7            BGT              WHILE1
+  216 000001A8 FBB1 F1F3       UDIV             R1, R1, R3
+  217 000001AC         ONES1
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+  218 000001AC F101 0130       ADD              R1, #0x30
+  219 000001B0 F105 0501       ADD              R5, R5, #1
+  220 000001B4 F000 F81E       BL               OUTPUT1
+  221 000001B8 F1A1 0130       SUB              R1, #0x30
+  222 000001BC FB01 F103       MUL              R1, R1, R3
+  223 000001C0 EBA0 0001       SUB              R0, R0, R1
+  224 000001C4 F1A2 0201       SUB              R2, R2, #1
+  225 000001C8 2A00            CMP              R2, #0
+  226 000001CA DB00            BLT              DONE1
+  227 000001CC E7DE            B                LOOP1
+  228 000001CE         DONE1
+  229 000001CE 9801            LDR              R0, [SP, #ASCII1]
+  230 000001D0 F7FF FFFE       BL               ST7735_OutChar
+  231 000001D4 9802            LDR              R0, [SP, #ASCII2]
+  232 000001D6 F7FF FFFE       BL               ST7735_OutChar
+  233 000001DA 9803            LDR              R0, [SP, #ASCII3]
+  234 000001DC F7FF FFFE       BL               ST7735_OutChar
+  235 000001E0 9804            LDR              R0, [SP, #ASCII4]
+  236 000001E2 F7FF FFFE       BL               ST7735_OutChar
+  237 000001E6 9805            LDR              R0, [SP, #ASCII5]
+  238 000001E8 F7FF FFFE       BL               ST7735_OutChar
+  239 000001EC         FINALOVERTENTHOUSAND
+  240 000001EC B006            ADD              SP, SP, #24
+  241 000001EE E8BD 43FE       POP              {R1,R2,R3,R4,R5,R6,R7,R8,R9,LR}
+  242 000001F2 4770            BX               LR
+  243 000001F4         OUTPUT1
+  244 000001F4 460F            MOV              R7, R1
+  245 000001F6 4690            MOV              R8, R2
+  246 000001F8 46F1            MOV              R9, LR
+  247 000001FA 2D02            CMP              R5, #2
+  248 000001FC DA01            BGE              SKP
+  249 000001FE 9105            STR              R1, [SP, #ASCII5]
+  250 00000200 E014            B                FIN
+  251 00000202         SKP
+  252 00000202 2D03            CMP              R5, #3
+  253 00000204 DA03            BGE              SKP1
+  254 00000206 9A05            LDR              R2, [SP, #ASCII5]
+  255 00000208 9204            STR              R2, [SP, #ASCII4]
+  256 0000020A 9105            STR              R1, [SP, #ASCII5]
+  257 0000020C E00E            B                FIN
+  258 0000020E         SKP1
+  259 0000020E 2D04            CMP              R5, #4
+  260 00000210 DA05            BGE              SKP2
+  261 00000212 9A04            LDR              R2, [SP, #ASCII4]
+  262 00000214 9203            STR              R2, [SP, #ASCII3]
+  263 00000216 9A05            LDR              R2, [SP, #ASCII5]
+  264 00000218 9204            STR              R2, [SP, #ASCII4]
+  265 0000021A 9105            STR              R1, [SP, #ASCII5]
+  266 0000021C E006            B                FIN
+  267 0000021E         SKP2
+  268 0000021E 9A03            LDR              R2, [SP, #ASCII3]
+  269 00000220 9201            STR              R2, [SP, #ASCII1]
+  270 00000222 9A04            LDR              R2, [SP, #ASCII4]
+  271 00000224 9203            STR              R2, [SP, #ASCII3]
+  272 00000226 9A05            LDR              R2, [SP, #ASCII5]
+  273 00000228 9204            STR              R2, [SP, #ASCII4]
+  274 0000022A 9105            STR              R1, [SP, #ASCII5]
+  275 0000022C         FIN
+  276 0000022C 4639            MOV              R1, R7
+
+
+
+ARM Macro Assembler    Page 6 
+
+
+  277 0000022E 4642            MOV              R2, R8
+  278 00000230 46CE            MOV              LR, R9
+  279 00000232 4770            BX               LR
+  280 00000234         ;* * * * * * * * End of LCD_OutFix * * * * * * * *
+  281 00000234         
+  282 00000234                 ALIGN                        ; make sure the end
+                                                             of this section is
+                                                             aligned
+  283 00000234                 END                          ; end of file
+Command Line: --debug --xref --cpu=Cortex-M4 --apcs=interwork --depend=.\print.
+d -o.\print.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\Include -IC:\Keil\ARM\
+Inc\Luminary --predefine="__EVAL SETA 1" --list=.\print.lst Print.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 17 in file Print.s
+   Uses
+      None
+Comment: .text unused
+BIL 00000078
+
+Symbol: BIL
+   Definitions
+      At line 75 in file Print.s
+   Uses
+      At line 41 in file Print.s
+      At line 43 in file Print.s
+
+DONE 000000EC
+
+Symbol: DONE
+   Definitions
+      At line 125 in file Print.s
+   Uses
+      At line 123 in file Print.s
+Comment: DONE used once
+DONE1 000001CE
+
+Symbol: DONE1
+   Definitions
+      At line 228 in file Print.s
+   Uses
+      At line 226 in file Print.s
+Comment: DONE1 used once
+FIN 0000022C
+
+Symbol: FIN
+   Definitions
+      At line 275 in file Print.s
+   Uses
+      At line 250 in file Print.s
+      At line 257 in file Print.s
+      At line 266 in file Print.s
+
+FINALOVERTENTHOUSAND 000001EC
+
+Symbol: FINALOVERTENTHOUSAND
+   Definitions
+      At line 239 in file Print.s
+   Uses
+      At line 195 in file Print.s
+Comment: FINALOVERTENTHOUSAND used once
+HUN 000000A2
+
+Symbol: HUN
+   Definitions
+      At line 96 in file Print.s
+   Uses
+      At line 69 in file Print.s
+Comment: HUN used once
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+HUN1 00000182
+
+Symbol: HUN1
+   Definitions
+      At line 199 in file Print.s
+   Uses
+      At line 178 in file Print.s
+Comment: HUN1 used once
+HUNMIL 0000007E
+
+Symbol: HUNMIL
+   Definitions
+      At line 78 in file Print.s
+   Uses
+      At line 47 in file Print.s
+Comment: HUNMIL used once
+HUNTHOU 00000090
+
+Symbol: HUNTHOU
+   Definitions
+      At line 87 in file Print.s
+   Uses
+      At line 62 in file Print.s
+Comment: HUNTHOU used once
+LCD_OutDec 00000000
+
+Symbol: LCD_OutDec
+   Definitions
+      At line 33 in file Print.s
+   Uses
+      At line 14 in file Print.s
+Comment: LCD_OutDec used once
+LCD_OutFix 00000114
+
+Symbol: LCD_OutFix
+   Definitions
+      At line 159 in file Print.s
+   Uses
+      At line 15 in file Print.s
+Comment: LCD_OutFix used once
+LOOP 000000AC
+
+Symbol: LOOP
+   Definitions
+      At line 101 in file Print.s
+   Uses
+      At line 77 in file Print.s
+      At line 80 in file Print.s
+      At line 83 in file Print.s
+      At line 86 in file Print.s
+      At line 89 in file Print.s
+      At line 92 in file Print.s
+      At line 95 in file Print.s
+      At line 98 in file Print.s
+      At line 124 in file Print.s
+
+LOOP1 0000018C
+
+Symbol: LOOP1
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Relocatable symbols
+
+   Definitions
+      At line 204 in file Print.s
+   Uses
+      At line 198 in file Print.s
+      At line 201 in file Print.s
+      At line 227 in file Print.s
+
+MIL 0000008A
+
+Symbol: MIL
+   Definitions
+      At line 84 in file Print.s
+   Uses
+      At line 57 in file Print.s
+Comment: MIL used once
+ONES 000000CC
+
+Symbol: ONES
+   Definitions
+      At line 114 in file Print.s
+   Uses
+      At line 74 in file Print.s
+      At line 104 in file Print.s
+
+ONES1 000001AC
+
+Symbol: ONES1
+   Definitions
+      At line 217 in file Print.s
+   Uses
+      At line 183 in file Print.s
+      At line 207 in file Print.s
+
+OUTPUT 000000F4
+
+Symbol: OUTPUT
+   Definitions
+      At line 129 in file Print.s
+   Uses
+      At line 117 in file Print.s
+Comment: OUTPUT used once
+OUTPUT1 000001F4
+
+Symbol: OUTPUT1
+   Definitions
+      At line 243 in file Print.s
+   Uses
+      At line 220 in file Print.s
+Comment: OUTPUT1 used once
+SKP 00000202
+
+Symbol: SKP
+   Definitions
+      At line 251 in file Print.s
+   Uses
+      At line 248 in file Print.s
+Comment: SKP used once
+SKP1 0000020E
+
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Relocatable symbols
+
+Symbol: SKP1
+   Definitions
+      At line 258 in file Print.s
+   Uses
+      At line 253 in file Print.s
+Comment: SKP1 used once
+SKP2 0000021E
+
+Symbol: SKP2
+   Definitions
+      At line 267 in file Print.s
+   Uses
+      At line 260 in file Print.s
+Comment: SKP2 used once
+TEN 000000A8
+
+Symbol: TEN
+   Definitions
+      At line 99 in file Print.s
+   Uses
+      At line 71 in file Print.s
+Comment: TEN used once
+TEN1 00000188
+
+Symbol: TEN1
+   Definitions
+      At line 202 in file Print.s
+   Uses
+      At line 180 in file Print.s
+Comment: TEN1 used once
+TENMIL 00000084
+
+Symbol: TENMIL
+   Definitions
+      At line 81 in file Print.s
+   Uses
+      At line 52 in file Print.s
+Comment: TENMIL used once
+TENTHOU 00000096
+
+Symbol: TENTHOU
+   Definitions
+      At line 90 in file Print.s
+   Uses
+      At line 65 in file Print.s
+Comment: TENTHOU used once
+TENTHOU1 00000152
+
+Symbol: TENTHOU1
+   Definitions
+      At line 184 in file Print.s
+   Uses
+      At line 172 in file Print.s
+      At line 174 in file Print.s
+
+THOU 0000009C
+
+Symbol: THOU
+   Definitions
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 93 in file Print.s
+   Uses
+      At line 67 in file Print.s
+Comment: THOU used once
+THOU1 0000017C
+
+Symbol: THOU1
+   Definitions
+      At line 196 in file Print.s
+   Uses
+      At line 176 in file Print.s
+Comment: THOU1 used once
+WHILE 000000B8
+
+Symbol: WHILE
+   Definitions
+      At line 107 in file Print.s
+   Uses
+      At line 112 in file Print.s
+Comment: WHILE used once
+WHILE1 00000198
+
+Symbol: WHILE1
+   Definitions
+      At line 210 in file Print.s
+   Uses
+      At line 215 in file Print.s
+Comment: WHILE1 used once
+31 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+ASCII 00000000
+
+Symbol: ASCII
+   Definitions
+      At line 20 in file Print.s
+   Uses
+      At line 116 in file Print.s
+      At line 136 in file Print.s
+
+ASCII1 00000004
+
+Symbol: ASCII1
+   Definitions
+      At line 21 in file Print.s
+   Uses
+      At line 164 in file Print.s
+      At line 229 in file Print.s
+      At line 269 in file Print.s
+
+ASCII2 00000008
+
+Symbol: ASCII2
+   Definitions
+      At line 22 in file Print.s
+   Uses
+      At line 169 in file Print.s
+      At line 231 in file Print.s
+
+ASCII3 0000000C
+
+Symbol: ASCII3
+   Definitions
+      At line 23 in file Print.s
+   Uses
+      At line 165 in file Print.s
+      At line 233 in file Print.s
+      At line 262 in file Print.s
+      At line 268 in file Print.s
+      At line 271 in file Print.s
+
+ASCII4 00000010
+
+Symbol: ASCII4
+   Definitions
+      At line 24 in file Print.s
+   Uses
+      At line 166 in file Print.s
+      At line 235 in file Print.s
+      At line 255 in file Print.s
+      At line 261 in file Print.s
+      At line 264 in file Print.s
+      At line 270 in file Print.s
+      At line 273 in file Print.s
+
+ASCII5 00000014
+
+Symbol: ASCII5
+   Definitions
+      At line 25 in file Print.s
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Absolute symbols
+
+   Uses
+      At line 167 in file Print.s
+      At line 237 in file Print.s
+      At line 249 in file Print.s
+      At line 254 in file Print.s
+      At line 256 in file Print.s
+      At line 263 in file Print.s
+      At line 265 in file Print.s
+      At line 272 in file Print.s
+      At line 274 in file Print.s
+
+6 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+ST7735_OutChar 00000000
+
+Symbol: ST7735_OutChar
+   Definitions
+      At line 12 in file Print.s
+   Uses
+      At line 137 in file Print.s
+      At line 186 in file Print.s
+      At line 188 in file Print.s
+      At line 190 in file Print.s
+      At line 192 in file Print.s
+      At line 194 in file Print.s
+      At line 230 in file Print.s
+      At line 232 in file Print.s
+      At line 234 in file Print.s
+      At line 236 in file Print.s
+      At line 238 in file Print.s
+
+ST7735_OutString 00000000
+
+Symbol: ST7735_OutString
+   Definitions
+      At line 13 in file Print.s
+   Uses
+      None
+Comment: ST7735_OutString unused
+2 symbols
+370 symbols in table
